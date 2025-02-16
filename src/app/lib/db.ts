@@ -1,14 +1,20 @@
 import { db } from "@vercel/postgres";
-
+import { Teacher } from "./definitions";
 //fetch teachers
-export async function getTeachers() {
+export async function getTeachers(): Promise<Teacher[]> {
   const client = await db.connect();
   const { rows } = await client.sql`
-    SELECT id, name, email, description, price, skills
+    SELECT id, name, email, price, skills
     FROM users
     WHERE role = 'TEACHER';
   `;
-  return rows;
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    price: row.price,
+    skills: row.skills,
+  }));
 }
 /**
  * Fetch all available slots with teacher info.
